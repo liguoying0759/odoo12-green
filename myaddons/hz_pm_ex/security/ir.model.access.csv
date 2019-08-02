@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_harztec_send_task_message_harztec_send_task_message,harztec_send_task_message.harztec_send_task_message,model_harztec_send_task_message_harztec_send_task_message,,1,0,0,0

@@ -1,0 +1,179 @@
+<odoo>
+    <data>
+        <!--   覆盖原来的看板视图，修改点开创建项目的时候默认的视图     -->
+        <record model="ir.ui.view" id="project.view_project_kanban">
+            <field name="name">project.project.kanban</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <kanban class="oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="color"/>
+                    <field name="task_count"/>
+                    <field name="label_tasks"/>
+                    <field name="alias_id"/>
+                    <field name="alias_name"/>
+                    <field name="alias_domain"/>
+                    <field name="is_favorite"/>
+                    <field name="percentage_satisfaction_project"/>
+                    <field name="rating_status"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click o_has_icon">
+                                <div class="o_project_kanban_main">
+                                    <div class="o_kanban_card_content">
+                                        <div class="o_kanban_primary_left">
+                                            <div class="o_primary">
+                                                <span>
+                                                    <t t-esc="record.name.value"/>
+                                                </span>
+                                                <span t-if="record.partner_id.value">
+                                                    <strong>
+                                                        <t t-esc="record.partner_id.value"/>
+                                                    </strong>
+                                                </span>
+                                            </div>
+                                            <div t-if="record.alias_name.value and record.alias_domain.value">
+                                                <span>
+                                                    <i class="fa fa-envelope" role="img" aria-label="Domain Alias"
+                                                       title="Domain Alias"></i>
+                                                    <t t-esc="record.alias_id.value"/>
+                                                </span>
+                                            </div>
+                                            <div t-if="record.rating_status.raw_value != 'no'" class="mt8 text-primary"
+                                                 title="Percentage of happy ratings over the past 30 days. Get rating details from the More menu."
+                                                 groups="project.group_project_rating">
+                                                <b>
+                                                    <t t-if="record.percentage_satisfaction_project.value == -1">
+                                                        <i class="fa fa-smile-o"/>
+                                                        No rating yet
+                                                    </t>
+                                                    <t t-if="record.percentage_satisfaction_project.value != -1">
+                                                        <a name="action_view_all_rating" type="object"
+                                                           context="{'search_default_rating_last_30_days':1}">
+                                                            <i class="fa fa-smile-o" role="img"
+                                                               aria-label="Percentage of satisfaction"
+                                                               title="Percentage of satisfaction"/>
+                                                            <t t-esc="record.percentage_satisfaction_project.value"/>%
+                                                        </a>
+                                                    </t>
+                                                </b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_card_manage_pane dropdown-menu"
+                                         groups="project.group_project_manager" role="menu">
+                                        <div class="o_kanban_card_manage_section o_kanban_manage_reports">
+                                            <div role="menuitem">
+                                                <a name="%(portal.portal_share_action)d" type="action">Share</a>
+                                            </div>
+                                            <div role="menuitem">
+                                                <a type="edit">Edit</a>
+                                            </div>
+                                            <div role="menuitem" t-if="record.rating_status.raw_value != 'no'">
+                                                <a name="action_view_all_rating" type="object">Customer Ratings</a>
+                                            </div>
+                                        </div>
+                                        <div role="menuitem" aria-haspopup="true"
+                                             class="o_no_padding_kanban_colorpicker">
+                                            <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>
+                                        </div>
+                                    </div>
+                                    <a class="o_kanban_manage_toggle_button o_left" href="#"
+                                       groups="project.group_project_manager">
+                                        <i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/>
+                                    </a>
+                                    <span class="o_right">
+                                        <field name="is_favorite" widget="boolean_favorite" nolabel="1" force_save="1"/>
+                                    </span>
+                                </div>
+
+                                <div class="o_project_kanban_boxes">
+                                    <a class="o_project_kanban_box"
+                                       name="%(project.act_project_project_2_project_task_all)d" type="action">
+                                        <div>
+                                            <span class="o_value">
+                                                <t t-esc="record.task_count.value"/>
+                                            </span>
+                                            <span class="o_label">
+                                                <t t-esc="record.label_tasks.value"/>
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!--         覆盖视图，添加项目编号字段project_no-->
+        <record id="hr_timesheet.project_invoice_form" model="ir.ui.view">
+            <field name="name">Inherit project form : Invoicing Data</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="priority">24</field>
+            <field name="arch" type="xml">
+                <button name="toggle_active" position="before">
+                    <button class="oe_stat_button" name="%(hr_timesheet.act_hr_timesheet_line_by_project)d"
+                            type="action"
+                            icon="fa-calendar" string="Timesheets"
+                            attrs="{'invisible': [('allow_timesheets', '=', False)]}"
+                            groups="hr_timesheet.group_hr_timesheet_user"/>
+                </button>
+                <xpath expr="//div[@name='options_active']" position="inside">
+                    <group>
+
+                        <group>
+
+
+                            <div>
+                                <field name="allow_timesheets" class="oe_inline" string="Allow timesheets"/>
+                                <label for="allow_timesheets"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="project_no"></field>
+                        </group>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="analytic_account_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        覆盖视图，添加合同编号字段contract_no-->
+        <record id="project_forecast.project_view_form_inherit_project_forecast" model="ir.ui.view">
+            <field name="name">project.view.form.inherit.project.forecast</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="priority">32</field>
+            <field name="arch" type="xml">
+                <div name="options_active" position="attributes">
+                    <attribute name="class"></attribute>
+                </div>
+                <div name="options_active" position="inside">
+                    <group>
+                        <group>
+                            <div>
+                                <field name="allow_forecast" class="oe_inline" string="Allow Forecast"/>
+                                <label for="allow_forecast"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="contract_no"></field>
+                        </group>
+                    </group>
+                </div>
+                <button name="toggle_active" position="before">
+                    <button class="oe_stat_button" type="object" attrs="{'invisible':[('allow_forecast', '=', False)]}"
+                            name="action_view_project_forecast" icon="fa-tasks">
+                        <span>Forecast</span>
+                    </button>
+                </button>
+            </field>
+        </record>
+    </data>
+</odoo>

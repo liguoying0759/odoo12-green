@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="inherit_project_view_task_form2_cooperator" model="ir.ui.view">
+            <field name="name">inherit_project_view_task_form2_cooperator</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <!-- Add your fields or attributes here -->
+                    <field name="cooperator_ids" widget="many2many_tags"></field>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>
