@@ -1,0 +1,15 @@
+<odoo>
+    <!--扩展客户订单-->
+    <template id="inherit_mrp_report_mrporder" inherit_id="mrp.report_mrporder"
+              name="extends_mrp_report_mrporder">
+        <xpath expr="//div[@class='row mt32 mb32'][last()]" position="inside">
+            <div class="col-xs-3">
+                <div t-if="o.client_order_ref1">
+                <strong>客户订单:</strong>
+                <br/>
+                <span t-esc="o.client_order_ref1"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
